@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Re-encrypt and redeploy alaska-2026.html to GitHub Pages.
+#
+# Usage: ./deploy.sh "commit message"
+#
+# Expects ./alaska-2026.html to be the source (will be overwritten in-place
+# by staticrypt with the encrypted version, then renamed to index.html).
+#
+# Reads the passphrase from $STATICRYPT_PASSWORD or prompts.
+
+set -euo pipefail
+
+DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
+SOURCE_HTML="/Users/wesleyfilleman/Library/Mobile Documents/com~apple~CloudDocs/Alaska 2026/alaska-2026.html"
+COMMIT_MSG="${1:-Update content}"
+
+if [ -z "${STATICRYPT_PASSWORD:-}" ]; then
+  echo "Error: set STATICRYPT_PASSWORD env var before running." >&2
+  exit 1
+fi
+
+cd "$DEPLOY_DIR"
+
+echo "[1/5] Copy fresh HTML from iCloud..."
+cp "$SOURCE_HTML" alaska-2026.html
+
+echo "[2/5] Encrypt with staticrypt..."
+npx --yes staticrypt alaska-2026.html --remember 365 --short -d . > /dev/null
+
+echo "[3/5] Inject PWA meta tags into gate page head..."
+# Use perl for a single-pass head injection that's idempotent (won't double-inject).
+perl -i -0pe '
+  s{<title>Protected Page</title>}{<title>Alaska 2026 \xc2\xb7 Filleman Family Voyage</title>
+        <meta name="robots" content="noindex,nofollow,noarchive">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Alaska 2026">
+        <meta name="theme-color" content="#0c2333">
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="icon.png">
+        <script>
+          if ("serviceWorker" in navigator \&\& location.protocol === "https:") {
+            window.addEventListener("load", () => {
+              navigator.serviceWorker.register("sw.js").catch(() => {});
+            });
+          }
+        </script>};
+' alaska-2026.html
+
+echo "[4/5] Rename to index.html..."
+mv alaska-2026.html index.html
+
+echo "[5/5] git add + commit + push..."
+git add -A
+if git diff --cached --quiet; then
+  echo "Nothing changed."
+  exit 0
+fi
+git -c user.name="WfIlleman" -c user.email="wes@mobileintegratedsolutions.com" commit -m "$COMMIT_MSG"
+git push -q origin main
+
+echo ""
+echo "Deployed. URL: https://wfilleman.github.io/alaska-2026/"
+echo "Pages build is queued; will be live in 30-90 seconds."
