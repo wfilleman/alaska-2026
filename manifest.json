@@ -1,0 +1,32 @@
+{
+  "name": "Alaska 2026 · Filleman Family Voyage",
+  "short_name": "Alaska 2026",
+  "description": "Day-by-day trip plan, maps, and reminders for the family Alaska voyage.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5efe2",
+  "theme_color": "#0c2333",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
