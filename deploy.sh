@@ -47,10 +47,17 @@ perl -i -0pe '
         </script>};
 ' alaska-2026.html
 
-echo "[4/5] Rename to index.html..."
+echo "[4/6] Rename to index.html..."
 mv alaska-2026.html index.html
 
-echo "[5/5] git add + commit + push..."
+echo "[5/6] Bump service-worker cache version..."
+# Replace the placeholder token (or any prior cache id) with a fresh timestamp
+# so browsers detect the SW change, install the new SW, and purge stale caches.
+NEW_CACHE_ID="$(date +%s)"
+perl -i -pe "s/alaska-2026-[A-Za-z0-9_-]+/alaska-2026-${NEW_CACHE_ID}/g" sw.js
+echo "  new CACHE id: alaska-2026-${NEW_CACHE_ID}"
+
+echo "[6/6] git add + commit + push..."
 git add -A
 if git diff --cached --quiet; then
   echo "Nothing changed."
