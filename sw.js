@@ -8,7 +8,7 @@
 //     below), so the new SW installs, old caches get deleted, and clients
 //     pick up the fresh content on next launch.
 
-const CACHE = 'alaska-2026-1779153609';
+const CACHE = 'alaska-2026-1779154185';
 const STATIC_ASSETS = ['./', 'index.html', 'manifest.json', 'icon.png'];
 
 self.addEventListener('install', (event) => {

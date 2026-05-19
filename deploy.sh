@@ -21,13 +21,21 @@ fi
 
 cd "$DEPLOY_DIR"
 
-echo "[1/5] Copy fresh HTML from iCloud..."
+echo "[1/7] Copy fresh HTML from iCloud..."
 cp "$SOURCE_HTML" alaska-2026.html
 
-echo "[2/5] Encrypt with staticrypt..."
+echo "[2/7] Stamp build version + date into title slide..."
+# Version = (current main commit count) + 1, since this commit hasn't happened yet
+NEXT_VERSION=$(( $(git rev-list --count HEAD 2>/dev/null || echo 0) + 1 ))
+BUILD_DATE=$(date "+%b %-d, %Y")
+perl -i -pe "s/BUILD_VERSION_TOKEN/${NEXT_VERSION}/g" alaska-2026.html
+perl -i -pe "s/BUILD_DATE_TOKEN/${BUILD_DATE}/g" alaska-2026.html
+echo "  v${NEXT_VERSION} · ${BUILD_DATE}"
+
+echo "[3/7] Encrypt with staticrypt..."
 npx --yes staticrypt alaska-2026.html --remember 365 --short -d . > /dev/null
 
-echo "[3/5] Inject PWA meta tags into gate page head..."
+echo "[4/7] Inject PWA meta tags into gate page head..."
 # Use perl for a single-pass head injection that's idempotent (won't double-inject).
 perl -i -0pe '
   s{<title>Protected Page</title>}{<title>Alaska 2026 \xc2\xb7 Filleman Family Voyage</title>
@@ -47,17 +55,17 @@ perl -i -0pe '
         </script>};
 ' alaska-2026.html
 
-echo "[4/6] Rename to index.html..."
+echo "[5/7] Rename to index.html..."
 mv alaska-2026.html index.html
 
-echo "[5/6] Bump service-worker cache version..."
+echo "[6/7] Bump service-worker cache version..."
 # Replace the placeholder token (or any prior cache id) with a fresh timestamp
 # so browsers detect the SW change, install the new SW, and purge stale caches.
 NEW_CACHE_ID="$(date +%s)"
 perl -i -pe "s/alaska-2026-[A-Za-z0-9_-]+/alaska-2026-${NEW_CACHE_ID}/g" sw.js
 echo "  new CACHE id: alaska-2026-${NEW_CACHE_ID}"
 
-echo "[6/6] git add + commit + push..."
+echo "[7/7] git add + commit + push..."
 git add -A
 if git diff --cached --quiet; then
   echo "Nothing changed."
