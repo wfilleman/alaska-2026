@@ -8,13 +8,32 @@
 //     below), so the new SW installs, old caches get deleted, and clients
 //     pick up the fresh content on next launch.
 
-const CACHE = 'alaska-2026-1779471299';
-const STATIC_ASSETS = ['./', 'index.html', 'manifest.json', 'icon.png'];
+const CACHE = 'alaska-2026-1779471691';
+const STATIC_ASSETS = [
+  './', 'index.html', 'manifest.json', 'icon.png',
+  // Remotion-rendered Inside Passage / Denali route animations
+  'maps/Title.mp4',
+  'maps/Overview.mp4',
+  'maps/Mini-YVR.mp4',
+  'maps/Mini-KTN.mp4',
+  'maps/Mini-JNU.mp4',
+  'maps/Mini-SKG.mp4',
+  'maps/Mini-GLB.mp4',
+  'maps/Mini-CLF.mp4',
+  'maps/Mini-WHT.mp4',
+  'maps/Mini-TLK.mp4',
+  'maps/Mini-MCK.mp4',
+  'maps/Mini-DEN-PARK.mp4',
+  'maps/Mini-FAI.mp4',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) =>
-      cache.addAll(STATIC_ASSETS).catch(() => Promise.resolve())
+      // Add each asset individually so one missing file doesn't abort install.
+      Promise.all(STATIC_ASSETS.map((url) =>
+        cache.add(url).catch(() => undefined)
+      ))
     )
   );
   // Take over immediately rather than waiting for old SW to release clients

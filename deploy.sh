@@ -11,7 +11,9 @@
 set -euo pipefail
 
 DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
-SOURCE_HTML="/Users/wesleyfilleman/Library/Mobile Documents/com~apple~CloudDocs/Alaska 2026/alaska-2026.html"
+ICLOUD_DIR="/Users/wesleyfilleman/Library/Mobile Documents/com~apple~CloudDocs/Alaska 2026"
+SOURCE_HTML="$ICLOUD_DIR/alaska-2026.html"
+SOURCE_MAPS_DIR="$ICLOUD_DIR/maps"
 COMMIT_MSG="${1:-Update content}"
 
 if [ -z "${STATICRYPT_PASSWORD:-}" ]; then
@@ -21,8 +23,17 @@ fi
 
 cd "$DEPLOY_DIR"
 
-echo "[1/7] Copy fresh HTML from iCloud..."
+echo "[1/7] Copy fresh HTML + maps from iCloud..."
 cp "$SOURCE_HTML" alaska-2026.html
+# Replace maps/ dir so removed renders don't linger
+rm -rf maps
+mkdir -p maps
+if [ -d "$SOURCE_MAPS_DIR" ]; then
+  cp "$SOURCE_MAPS_DIR"/*.mp4 maps/
+  echo "  copied $(ls maps/ | wc -l | tr -d ' ') MP4s"
+else
+  echo "  warning: no maps directory at $SOURCE_MAPS_DIR" >&2
+fi
 
 echo "[2/7] Stamp build version + date into title slide..."
 # Version = (current main commit count) + 1, since this commit hasn't happened yet
