@@ -8,24 +8,11 @@
 //     below), so the new SW installs, old caches get deleted, and clients
 //     pick up the fresh content on next launch.
 
-const CACHE = 'alaska-2026-1779471691';
-const STATIC_ASSETS = [
-  './', 'index.html', 'manifest.json', 'icon.png',
-  // Remotion-rendered Inside Passage / Denali route animations
-  'maps/Title.mp4',
-  'maps/Overview.mp4',
-  'maps/Mini-YVR.mp4',
-  'maps/Mini-KTN.mp4',
-  'maps/Mini-JNU.mp4',
-  'maps/Mini-SKG.mp4',
-  'maps/Mini-GLB.mp4',
-  'maps/Mini-CLF.mp4',
-  'maps/Mini-WHT.mp4',
-  'maps/Mini-TLK.mp4',
-  'maps/Mini-MCK.mp4',
-  'maps/Mini-DEN-PARK.mp4',
-  'maps/Mini-FAI.mp4',
-];
+const CACHE = 'alaska-2026-1779472966';
+// MP4s are intentionally excluded — the SW fetch handler skips video requests
+// (see below) so the browser handles them natively. iOS standalone PWA mode
+// has reliability issues with SW-served videos.
+const STATIC_ASSETS = ['./', 'index.html', 'manifest.json', 'icon.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -58,6 +45,16 @@ function isHtmlRequest(request) {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = event.request.url || '';
+
+  // Skip SW interception for MP4 / media files. iOS WKWebView (standalone
+  // PWA mode) is finicky about videos served through a SW — we've observed
+  // empty/broken responses in standalone mode while Safari proper worked
+  // fine with the same SW. Letting the browser fetch directly via the HTTP
+  // stack avoids this. Trade-off: maps need an online connection on first
+  // view, but the browser's HTTP cache covers same-session reloads.
+  if (/\.(mp4|m4v|webm|mov)(\?|$)/i.test(url)) return;
+
   if (isHtmlRequest(event.request)) {
     // Network-first for HTML: always try fresh, fall back to cache offline.
     event.respondWith(
@@ -76,7 +73,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first for everything else
+  // Cache-first for non-media static assets (manifest, icon, etc.)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
