@@ -23,7 +23,7 @@ fi
 
 cd "$DEPLOY_DIR"
 
-echo "[1/7] Copy fresh HTML + maps from iCloud..."
+echo "[1/7] Copy fresh HTML + maps + emergency PDF from iCloud..."
 cp "$SOURCE_HTML" alaska-2026.html
 # Replace maps/ dir so removed renders don't linger
 rm -rf maps
@@ -33,6 +33,11 @@ if [ -d "$SOURCE_MAPS_DIR" ]; then
   echo "  copied $(ls maps/ | wc -l | tr -d ' ') MP4s"
 else
   echo "  warning: no maps directory at $SOURCE_MAPS_DIR" >&2
+fi
+# One-page emergency card PDF (contact list, confirmations, lodges, hospital)
+if [ -f "$ICLOUD_DIR/emergency-card.pdf" ]; then
+  cp "$ICLOUD_DIR/emergency-card.pdf" emergency-card.pdf
+  echo "  copied emergency-card.pdf ($(wc -c < emergency-card.pdf) bytes)"
 fi
 
 echo "[2/7] Stamp build version + date into title slide..."
