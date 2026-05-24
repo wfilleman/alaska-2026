@@ -12,7 +12,7 @@
 //     below), so the new SW installs, old caches get deleted, and clients
 //     pick up the fresh content on next launch.
 
-const CACHE = 'alaska-2026-1779638911';
+const CACHE = 'alaska-2026-1779645860';
 const STATIC_ASSETS = [
   './', 'index.html', 'manifest.json', 'icon.png',
   // Remotion-rendered route animations (pre-cached for offline use on the cruise)
