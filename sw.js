@@ -12,7 +12,7 @@
 //     below), so the new SW installs, old caches get deleted, and clients
 //     pick up the fresh content on next launch.
 
-const CACHE = 'alaska-2026-1780450064';
+const CACHE = 'alaska-2026-1780450673';
 const STATIC_ASSETS = [
   './', 'index.html', 'manifest.json', 'icon.png',
   // (emergency-card.pdf is now base64-embedded inside index.html, not a separate file)

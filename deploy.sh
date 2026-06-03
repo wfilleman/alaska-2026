@@ -54,9 +54,9 @@ perl -i -0pe '
   s{<title>Protected Page</title>}{<title>Alaska 2026 \xc2\xb7 Filleman Family Voyage</title>
         <meta name="robots" content="noindex,nofollow,noarchive">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="Alaska 2026">
-        <meta name="theme-color" content="#0c2333">
+        <meta name="theme-color" content="#f5efe2">
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="icon.png">
         <script>
