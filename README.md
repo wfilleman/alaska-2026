@@ -19,7 +19,10 @@ A password-protected, offline-capable PWA slideshow for our 2026 Alaska cruise +
 3. Tap **Share → Add to Home Screen**. The icon will install.
 4. Open the icon any time — even on a plane or at sea — to flip through the trip.
 
-If the icon ever stops working, open the URL in Safari again with internet to refresh the cache.
+**Troubleshooting**
+
+- If the icon ever stops working, open the URL in Safari again (with internet) to refresh the cache.
+- If taps feel **misaligned** after an update (a button does the wrong thing), **delete the home-screen icon and re-add it** (Safari → Share → Add to Home Screen). iOS bakes some app settings — including the status-bar style — into the icon at install time, so a fresh install is required to pick up changes. A force-kill/relaunch is not enough.
 
 ## What the encryption protects
 
@@ -41,3 +44,10 @@ npm run render && npx tsx scripts/inline-build.ts && npx tsx scripts/write-pwa-f
 ```
 
 Then re-encrypt and redeploy. See `~/Documents/alaska-2026-deploy/` for the deploy workspace.
+
+## Maintainer / agent notes
+
+See [`CLAUDE.md`](CLAUDE.md) for the full build → deploy pipeline, where secrets
+live, and hard-won iOS standalone-PWA gotchas (notably: the status-bar style
+controls touch-target alignment — `black-translucent` desyncs taps; use
+`default`).
