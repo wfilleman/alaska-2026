@@ -1,0 +1,5 @@
+# Local tooling — NOT for the public repo.
+# scripts/make_card.py contains family phone numbers + booking confirmation
+# codes in plaintext. It generates emergency-card.pdf locally; only the PDF
+# is meant to ship. Keep the source out of this public repo.
+scripts/

@@ -23,7 +23,7 @@ fi
 
 cd "$DEPLOY_DIR"
 
-echo "[1/7] Copy fresh HTML + maps + emergency PDF from iCloud..."
+echo "[1/7] Copy fresh HTML + maps from iCloud..."
 cp "$SOURCE_HTML" alaska-2026.html
 # Replace maps/ dir so removed renders don't linger
 rm -rf maps
@@ -34,11 +34,8 @@ if [ -d "$SOURCE_MAPS_DIR" ]; then
 else
   echo "  warning: no maps directory at $SOURCE_MAPS_DIR" >&2
 fi
-# One-page emergency card PDF (contact list, confirmations, lodges, hospital)
-if [ -f "$ICLOUD_DIR/emergency-card.pdf" ]; then
-  cp "$ICLOUD_DIR/emergency-card.pdf" emergency-card.pdf
-  echo "  copied emergency-card.pdf ($(wc -c < emergency-card.pdf) bytes)"
-fi
+# NOTE: emergency-card.pdf is no longer deployed as a public file — it is now
+# base64-embedded inside the encrypted alaska-2026.html (by inline-build.ts).
 
 echo "[2/7] Stamp build version + date into title slide..."
 # Version = (current main commit count) + 1, since this commit hasn't happened yet
